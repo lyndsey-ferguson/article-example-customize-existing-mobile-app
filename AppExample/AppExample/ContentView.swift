@@ -16,24 +16,21 @@ struct ContentView: View {
     }
     
     var text: String {
-        return configuration?["WelcomeMessage"] as! String
+        return self.configuration?["WelcomeMessage"] as? String ?? "Welcome"
     }
     
     var backgroundColor: Color {
-        if let colorString: String = self.configuration?["BackgroundHexColor"] as? String {
-            if let color = UIColor(hex: colorString) {
-                return Color(color)
-            }
-        }
-        return  Color.white
+        let brandedBackgroundColor = self.configuration?["BackgroundHexColor"]
+            .flatMap { $0 as? String }
+            .flatMap(UIColor.init(hex:))
+            .flatMap(Color.init)
+        
+        return brandedBackgroundColor ?? .white
     }
     
     var configuration: NSDictionary? {
-        var nsDictionary: NSDictionary?
-        if let path = Bundle.main.path(forResource: "configurations", ofType: "plist") {
-           nsDictionary = NSDictionary(contentsOfFile: path)
-        }
-        return nsDictionary
+        return Bundle.main.path(forResource: "configurations", ofType: "plist")
+            .flatMap(NSDictionary.init(contentsOfFile:))
     }
 }
 
