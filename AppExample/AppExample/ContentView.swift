@@ -10,7 +10,30 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Text("Hello, World!")
+        Text(self.text)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(self.backgroundColor)
+    }
+    
+    var text: String {
+        return configuration?["WelcomeMessage"] as! String
+    }
+    
+    var backgroundColor: Color {
+        if let colorString: String = self.configuration?["BackgroundHexColor"] as? String {
+            if let color = UIColor(hex: colorString) {
+                return Color(color)
+            }
+        }
+        return  Color.white
+    }
+    
+    var configuration: NSDictionary? {
+        var nsDictionary: NSDictionary?
+        if let path = Bundle.main.path(forResource: "configurations", ofType: "plist") {
+           nsDictionary = NSDictionary(contentsOfFile: path)
+        }
+        return nsDictionary
     }
 }
 

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		26555E5623FCA8950019EA65 /* configurations.plist in Resources */ = {isa = PBXBuildFile; fileRef = 26555E5523FCA8950019EA65 /* configurations.plist */; };
+		26555E5823FCA8F00019EA65 /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26555E5723FCA8F00019EA65 /* UIColor+Hex.swift */; };
 		26F0364223FB50A400AB9C66 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26F0364123FB50A400AB9C66 /* AppDelegate.swift */; };
 		26F0364423FB50A400AB9C66 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26F0364323FB50A400AB9C66 /* SceneDelegate.swift */; };
 		26F0364623FB50A400AB9C66 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26F0364523FB50A400AB9C66 /* ContentView.swift */; };
@@ -35,6 +37,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		26555E5523FCA8950019EA65 /* configurations.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = configurations.plist; sourceTree = "<group>"; };
+		26555E5723FCA8F00019EA65 /* UIColor+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
 		26F0363E23FB50A400AB9C66 /* AppExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26F0364123FB50A400AB9C66 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		26F0364323FB50A400AB9C66 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -106,6 +110,8 @@
 				26F0364C23FB50A600AB9C66 /* LaunchScreen.storyboard */,
 				26F0364F23FB50A600AB9C66 /* Info.plist */,
 				26F0364923FB50A600AB9C66 /* Preview Content */,
+				26555E5523FCA8950019EA65 /* configurations.plist */,
+				26555E5723FCA8F00019EA65 /* UIColor+Hex.swift */,
 			);
 			path = AppExample;
 			sourceTree = "<group>";
@@ -241,6 +247,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				26F0364E23FB50A600AB9C66 /* LaunchScreen.storyboard in Resources */,
+				26555E5623FCA8950019EA65 /* configurations.plist in Resources */,
 				26F0364B23FB50A600AB9C66 /* Preview Assets.xcassets in Resources */,
 				26F0364823FB50A600AB9C66 /* Assets.xcassets in Resources */,
 			);
@@ -268,6 +275,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				26F0364223FB50A400AB9C66 /* AppDelegate.swift in Sources */,
+				26555E5823FCA8F00019EA65 /* UIColor+Hex.swift in Sources */,
 				26F0364423FB50A400AB9C66 /* SceneDelegate.swift in Sources */,
 				26F0364623FB50A400AB9C66 /* ContentView.swift in Sources */,
 			);
