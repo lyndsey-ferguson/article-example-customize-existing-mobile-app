@@ -20,6 +20,11 @@ or alternatively using `brew cask install fastlane`
 fastlane customize_build
 ```
 
+### build_custom_app
+```
+fastlane build_custom_app
+```
+
 
 ----
 

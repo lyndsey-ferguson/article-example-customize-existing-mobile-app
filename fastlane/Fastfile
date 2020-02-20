@@ -1,5 +1,22 @@
 
-lane :customize_build do
-  puts "hello world"
+lane :customize_build do |options|
+  welcome_message = options[:welcome_message]
+  background_color = options[:background_color]
+
+  update_plist(
+    plist_path: './AppExample/AppExample/configurations.plist',
+    block: proc do |plist|
+      plist[:WelcomeMessage] = welcome_message
+      plist[:BackgroundHexColor] = background_color
+    end
+  )
 end
 
+lane :build_custom_app do |options|
+  customize_build options
+  build_app(
+      scheme: 'AppExample',
+      project: './AppExample/AppExample.xcodeproj',
+      skip_codesigning: true
+  )
+end
