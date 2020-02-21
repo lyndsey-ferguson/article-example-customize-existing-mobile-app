@@ -1,7 +1,7 @@
 
 lane :customize_build do |options|
-  welcome_message = options[:welcome_message]
-  background_color = options[:background_color]
+  welcome_message = options[:welcome_message] || 'Hello World!'
+  background_color = options[:background_color] || '#FFFFFFFF'
 
   update_plist(
     plist_path: './AppExample/AppExample/configurations.plist',
@@ -14,9 +14,17 @@ end
 
 lane :build_custom_app do |options|
   customize_build options
-  build_app(
-      scheme: 'AppExample',
+  xcodebuild(
+    {
+      clean: true,
+      build: true,
+      output_name: "simulatorApp.ipa",
       project: './AppExample/AppExample.xcodeproj',
-      skip_codesigning: true
+      scheme: 'AppExample',
+      configuration: "SimulatorBuild",
+      sdk: "iphonesimulator",
+      destination: "platform=iOS Simulator,name=iPhone 8",
+      xcargs: "ONLY_ACTIVE_ARCH=NO"
+    }
   )
 end
