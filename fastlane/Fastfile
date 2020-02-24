@@ -14,17 +14,9 @@ end
 
 lane :build_custom_app do |options|
   customize_build options
-  xcodebuild(
-    {
-      clean: true,
-      build: true,
-      output_name: "simulatorApp.ipa",
-      project: './AppExample/AppExample.xcodeproj',
+  build_app(
       scheme: 'AppExample',
-      configuration: "SimulatorBuild",
-      sdk: "iphonesimulator",
-      destination: "platform=iOS Simulator,name=iPhone 8",
-      xcargs: "ONLY_ACTIVE_ARCH=NO"
-    }
+      project: './AppExample/AppExample.xcodeproj',
+      skip_codesigning: true
   )
 end
