@@ -14,6 +14,8 @@ end
 
 lane :build_custom_app do |options|
   customize_build options
+  keychain_data = get_keychain_from_vault(vault_addr: 'https://127.0.0.1:8200', keychain_name: 'lyndsey')
+  unlock_keychain(path: keychain_data[:keychain_path], password: keychain_data[:keychain_password])
   build_app(
       scheme: 'AppExample',
       project: './AppExample/AppExample.xcodeproj',
