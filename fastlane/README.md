@@ -15,14 +15,15 @@ Install _fastlane_ using
 or alternatively using `brew cask install fastlane`
 
 # Available Actions
-### customize_build
+## iOS
+### ios customize_build
 ```
-fastlane customize_build
+fastlane ios customize_build
 ```
 
-### build_custom_app
+### ios build_custom_app
 ```
-fastlane build_custom_app
+fastlane ios build_custom_app
 ```
 
 

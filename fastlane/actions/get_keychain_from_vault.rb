@@ -15,8 +15,8 @@ module Fastlane
         keychain_name = params[:keychain_name]
         encoded_keychain_data, encrypted_keychain_password = keychain_data(keychain_name)
         keychain_password = decrypter.private_decrypt(encrypted_keychain_password)
-        
-        decoded_keychain_filepath = params[:keychain_path] || tmp_keychain_filepath(keychain_name)
+
+        decoded_keychain_filepath = params[:keychain_path] || tmp_keychain_filepath
 
         File.open(decoded_keychain_filepath, 'wb') do |f|
           f.write(Base64.decode64(encoded_keychain_data))
@@ -45,7 +45,7 @@ module Fastlane
         encoded_keychain_data = keychain_secret.data.dig(:data, :keychain_encoded_data)
         encoded_encrypted_keychain_password  = keychain_secret.data.dig(:data, :encoded_encrypted_keychain_password)
         encrypted_keychain_password = Base64.decode64(encoded_encrypted_keychain_password)
-        
+
         [encoded_keychain_data, encrypted_keychain_password]
       end
 
@@ -55,7 +55,7 @@ module Fastlane
 
         encoded_private_key = crypto_secret.data.dig(:data, :encoded_private_key)
         passphrase = crypto_secret.data.dig(:data, :passphrase)
-        
+
         private_key = Base64.decode64(encoded_private_key)
         [private_key, passphrase]
       end
@@ -76,14 +76,14 @@ module Fastlane
         [
           FastlaneCore::ConfigItem.new(
             key: :vault_addr,
-            env_name: "VAULT_ADDR", 
+            env_name: "VAULT_ADDR",
             description: "The address of the Vault server expressed as a URL and port, for example: https://127.0.0.1:8200/",
           ),
           FastlaneCore::ConfigItem.new(
             key: :vault_token,
             env_name: "VAULT_TOKEN",
             description: "Vault authentication token",
-            is_string: false, 
+            is_string: false,
             default_value: false
           ),
           FastlaneCore::ConfigItem.new(
@@ -100,7 +100,7 @@ module Fastlane
 
 
       def self.return_value
-        "A hash containing a :keychain_path and a :keychain_password"   
+        "A hash containing a :keychain_path and a :keychain_password"
       end
 
       def self.authors
