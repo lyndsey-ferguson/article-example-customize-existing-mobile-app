@@ -1,3 +1,4 @@
+fastlane_require 'open-uri'
 
 platform :ios do
   lane :customize_build do |options|
@@ -31,6 +32,8 @@ platform :ios do
     build_app(
         scheme: 'AppExample',
         project: './AppExample/AppExample.xcodeproj',
+        output_directory: 'test_output',
+        output_name: 'example.ipa',
         export_options: {
           method: "app-store",
           provisioningProfiles: {
@@ -40,6 +43,28 @@ platform :ios do
         export_team_id: '57738V598V',
         xcargs: 'CODE_SIGN_IDENTITY="Apple Distribution: Jedidiah Fonner (57738V598V)"'
     )
+  end
+
+  lane :download_latest_release do |options|
+    result = github_api(
+      http_method: 'GET',
+      path: '/repos/lyndsey-ferguson/CustomizeExistingAppExample/releases/latest',
+      api_token: File.read(File.absolute_path('../.github_token'))
+    )
+    body = JSON.parse(result[:body])
+    browser_download_url = body["assets"].first["browser_download_url"]
+
+    zipfile = Tempfile.new(['latest_release', 'zip'])
+    zipfile.binmode
+    open(browser_download_url) do |download|
+      zipfile.write(download.read)
+    end
+    zipfile.close
+    latest_release_dir = File.absolute_path('../latest_release')
+    FileUtils.mkdir_p(latest_release_dir)
+    zip_package_path = File.join(latest_release_dir, 'package.zip')
+    FileUtils.rm_f(zip_package_path)
+    FileUtils.cp(zipfile.path, zip_package_path)
   end
 end
 

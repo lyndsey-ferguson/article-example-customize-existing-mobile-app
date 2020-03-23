@@ -26,6 +26,11 @@ fastlane ios customize_build
 fastlane ios build_custom_app
 ```
 
+### ios download_latest_release
+```
+fastlane ios download_latest_release
+```
+
 
 ----
 
