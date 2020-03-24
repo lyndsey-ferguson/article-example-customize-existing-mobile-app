@@ -66,5 +66,14 @@ platform :ios do
     FileUtils.rm_f(zip_package_path)
     FileUtils.cp(zipfile.path, zip_package_path)
   end
+
+  lane :customize_built_app do |options|
+    download_latest_release
+    # expand out app
+    # run the customize images step
+    # unlock the keychain
+    # get the customer's provisioning profile, code signing identity and team id
+    # code sign with the given keychain and above information
+  end
 end
 
