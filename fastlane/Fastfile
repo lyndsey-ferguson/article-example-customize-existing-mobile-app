@@ -65,15 +65,32 @@ platform :ios do
     zip_package_path = File.join(latest_release_dir, 'package.zip')
     FileUtils.rm_f(zip_package_path)
     FileUtils.cp(zipfile.path, zip_package_path)
+    zip_package_path
   end
 
   lane :customize_built_app do |options|
-    download_latest_release
-    # expand out app
-    # run the customize images step
-    # unlock the keychain
-    # get the customer's provisioning profile, code signing identity and team id
-    # code sign with the given keychain and above information
+    zip_package_path = download_latest_release
+    # unzip the ipa/images package into a tmp directory
+    Dir.mktmpdir("latest_release_pkg") do |latest_release_pkg_path|
+      Dir.chdir(latest_release_pkg_path) do
+        sh("unzip -o -q #{zip_package_path}")
+
+        example_ipa_filepath = File.absolute_path('example.ipa')
+        app_iconset_dirpath = File.absolute_path('AppIcon.appiconset')
+
+        # now that we have the package unzipped into a temporary folder, lets unzip the ipa so we can operate inside of it
+        Dir.mktmpdir("customize_built_app") do |unzipped_ipa_path|
+          Dir.chdir(unzipped_ipa_path) do
+            sh("unzip -o -q #{example_ipa_filepath}")
+            # customize images
+            # unlock keychain
+            # get customer profile, code signing id, and team id
+            # code sign
+            puts Dir.pwd
+          end
+        end
+      end
+    end
   end
 end
 
