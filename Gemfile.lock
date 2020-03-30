@@ -171,6 +171,7 @@ PLATFORMS
 DEPENDENCIES
   fastlane
   openssl
+  plist
   pry-byebug
   vault
 
