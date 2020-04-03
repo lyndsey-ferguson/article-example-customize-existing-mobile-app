@@ -1,6 +1,8 @@
+require 'pry-byebug'
 require_relative 'binary_plist'
 
 def customize_built_app(options)
+  # a handy default for quick iterations
   customer_assets = 'puppy'
 
   customer_appiconset_dirpath = File.absolute_path("../#{customer_assets}/#{customer_assets}.appiconset")
