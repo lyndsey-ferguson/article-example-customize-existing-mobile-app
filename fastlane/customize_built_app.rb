@@ -20,20 +20,21 @@ def customize_built_app(options)
         Dir.chdir(unzipped_ipa_path) do
           sh("unzip -o -q #{example_ipa_filepath}")
           example_ipa_payload_dir = File.join(unzipped_ipa_path, "Payload")
-          byebug
+          app_bundle_path = File.join(example_ipa_payload_dir, 'AppExample.app')
+
           copy_customer_images(customer_appiconset_dirpath, latest_release_pkg_path)
           compile_images(latest_release_pkg_path, example_ipa_payload_dir)
 
           # use the 'lyndsey' keychain for now
           keychain_data = get_keychain_from_vault(vault_addr: 'http://127.0.0.1:8200', keychain_name: 'lyndsey', keychain_path: '/Users/lyndsey.ferguson/Library/Keychains/lyndsey.keychain-db')
-          unlock_keychain(path: keychain_data[:keychain_path], password: keychain_data[:keychain_password], set_default: true)
-          # get customer profile, code signing id, and team id
-          cert = '' # find the cert!
-          sign_frameworks(cert, keychain_data[:keychain_path])
-          bundle_path = 'Payload/AppExample.app'
-          prepare_bundle(bundle_path, customer_profile_pathname)
-	  # code sign
-          puts Dir.pwd
+          keychain_password = keychain_data[:keychain_password]
+          keychain_path = keychain_data[:keychain_path]
+
+          unlock_keychain(path: keychain_path, password: keychain_password, set_default: true)
+          cert = certificate_id_from_keychain(keychain_path)
+          sign_frameworks(cert, keychain_path)
+          prepare_app_bundle(app_bundle_path, customer_profile_pathname)
+          prepare_entitlements(cert, app_bundle_path, keychain_path, customer_profile_pathname)
         end
       end
     end
@@ -41,6 +42,12 @@ def customize_built_app(options)
 end
 
 APP_ICON_ASSET_DIR = 'AppIcon.appiconset'
+
+def certificate_id_from_keychain(keychain_filepath)
+  identity_output = Fastlane::Actions.sh('security', 'find-identity', '-v', '-p', 'codesigning', keychain_filepath)
+  UI.user_error!('Keychain does not contain a single valid signing identity') unless identity_output.match(/1 valid identities found/)
+  identity_output.lines.first.split[1].downcase
+end
 
 def app_icon_asset_path(latest_release_pkg_path)
   File.join(latest_release_pkg_path, APP_ICON_ASSET_DIR)
@@ -70,32 +77,35 @@ def compile_images(latest_release_pkg_path, example_ipa_payload_dir)
   command += "--minimum-deployment-target #{minimum_deployment_target} "
   command += '--app-icon AppIcon --platform iphoneos '
   command += "--output-partial-info-plist #{latest_release_pkg_path}/build/partial.plist "
-  byebug
   sh(command)
 end
 
 def sign_frameworks(cert, keychain_filepath)
   frameworks = Dir.glob('Payload/AppExample.app/Frameworks/*.dylib').map { |s| "'#{s}'" }.join(' ')
-  sh("/usr/bin/codesign -f --keychain \"#{keychain_filepath.shellescape}\"  -s \"#{cert}\" #{frameworks}")
+  unless frameworks.empty?
+    sh("/usr/bin/codesign -f --keychain \"#{keychain_filepath.shellescape}\"  -s \"#{cert}\" #{frameworks}")
+  end
 end
 
-def prepare_bundle(bundle_path, profile_pathname)
+def prepare_app_bundle(app_bundle_path, profile_pathname)
   # Remove existing signature file
-  FileUtils.rm_rf("Payload/#{bundle_path}/_CodeSignature")
+  FileUtils.rm_rf("#{app_bundle_path}/_CodeSignature")
 
   # Copy associated provisioning profile to app
-  FileUtils.cp(profile_pathname, "Payload/#{bundle_path}/embedded.mobileprovision")
+  FileUtils.cp(profile_pathname, "#{app_bundle_path}/embedded.mobileprovision")
 end
 
-def prepare_entitlements(cert, bundle_path, keychain_filepath)
-  app_path = "Payload/#{bundle_path}"
+def prepare_entitlements(cert, app_bundle_path, keychain_filepath, mobileprovisioning_filepath)
   # File exists in builds that were created with xcode versions < 10.
   # Entitlements are now embedded in the app binary which are read and manipulated before signing them back into the binary.
-  FileUtils.rm_f("Payload/#{bundle_path}/#{File.basename(bundle_path, '.*')}.entitlements")
+  FileUtils.rm_f("#{app_bundle_path}/#{File.basename(app_bundle_path, '.*')}.entitlements")
   entitlements = Tempfile.new()
-  sh("/usr/bin/codesign -d --entitlements :\"#{entitlements.path}\" \"#{app_path}\"")
-  customize_xml_bundle_id(entitlements.path)
-  sh("/usr/bin/codesign -f --keychain \"#{keychain_filepath.shellescape}\" -s \"#{cert}\" --entitlements \"#{entitlements.path}\" \"#{app_path}\"")
+  sh("/usr/bin/codesign -d --entitlements :\"#{entitlements.path}\" \"#{app_bundle_path}\"")
+  mobileprovisioning_data = plist_for_profile(mobileprovisioning_filepath)
+  team_id = mobileprovisioning_data.dig('Entitlements', 'com.apple.developer.team-identifier')
+  app_id = mobileprovisioning_data.dig('Entitlements', 'application-identifier').sub("#{team_id}.", '')
+  customize_xml_bundle_id(entitlements.path, app_id, team_id)
+  sh("/usr/bin/codesign -f --keychain \"#{keychain_filepath.shellescape}\" -s \"#{cert}\" --entitlements \"#{entitlements.path}\" \"#{app_bundle_path}\"")
 end
 
 def customize_xml_bundle_id(xml_path, customer_app_id, customer_team_id)
@@ -104,7 +114,11 @@ def customize_xml_bundle_id(xml_path, customer_app_id, customer_team_id)
   xml_hash['application-identifier'] = customer_app_id
   xml_hash['com.apple.developer.team-identifier'] = customer_team_id if xml_hash.key?('com.apple.developer.team-identifier')
 
-  entitlement_ids.each { |key, value| xml_hash[key] = value if xml_hash.key?(key) }
-
   xml_hash.save_plist(xml_path)
+end
+
+def plist_for_profile(profile)
+  output_plist_file = Tempfile.new
+  `security cms -D -i \"#{profile}\" > \"#{output_plist_file.path}\"` if File.exists?(profile)
+  Plist.parse_xml(output_plist_file) || {}
 end
