@@ -1,14 +1,23 @@
 
 def build_custom_app(options)
+  customer_assets = 'lyndsey'
   customize_build options
-  keychain_data = get_keychain_from_vault(vault_addr: 'http://127.0.0.1:8200', keychain_name: 'lyndsey', keychain_path: '/Users/lyndsey.ferguson/Library/Keychains/lyndsey.keychain-db')
-  unlock_keychain(path: keychain_data[:keychain_path], password: keychain_data[:keychain_password], set_default: true)
+  keychain_data = get_keychain_from_vault(
+    vault_addr: 'http://127.0.0.1:8200',
+    keychain_name: customer_assets
+  )
+  unlock_keychain(
+    path: keychain_data[:keychain_path],
+    password: keychain_data[:keychain_password],
+    set_default: true
+  )
   disable_automatic_code_signing(path: './AppExample/AppExample.xcodeproj')
+  code_signing_identity = code_signing_identity_from_keychain(keychain_data[:keychain_path])
   update_project_provisioning(
     xcodeproj: './AppExample/AppExample.xcodeproj',
     profile: "./AppExample/Yillyyally.mobileprovision",
     build_configuration: "Release",
-    code_signing_identity: "Apple Distribution: Jedidiah Fonner (57738V598V)"
+    code_signing_identity: code_signing_identity
   )
   update_project_team(
     path: './AppExample/AppExample.xcodeproj',
@@ -26,7 +35,12 @@ def build_custom_app(options)
         }
       },
       export_team_id: '57738V598V',
-      xcargs: 'CODE_SIGN_IDENTITY="Apple Distribution: Jedidiah Fonner (57738V598V)"'
+      xcargs: "CODE_SIGN_IDENTITY=\"#{code_signing_identity}\""
   )
 end
 
+def code_signing_identity_from_keychain(keychain_filepath)
+  identity_output = Fastlane::Actions.sh('security', 'find-identity', '-v', '-p', 'codesigning', keychain_filepath)
+  UI.user_error!('Keychain does not contain a single valid signing identity') unless identity_output.match(/1 valid identities found/)
+  identity_output.lines.first.chomp.sub(/.*"([^"]+)".*/, '\1')
+end

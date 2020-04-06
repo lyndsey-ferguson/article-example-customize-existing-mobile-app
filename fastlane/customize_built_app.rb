@@ -27,9 +27,10 @@ def customize_built_app(options)
           copy_customer_images(customer_appiconset_dirpath, latest_release_pkg_path)
           compile_images(latest_release_pkg_path, example_ipa_payload_dir)
 
-          # use the 'lyndsey' keychain for now
-          keychain_data = get_keychain_from_vault(vault_addr: 'http://127.0.0.1:8200', keychain_name: 'lyndsey', keychain_path: '/Users/lyndsey.ferguson/Library/Keychains/lyndsey.keychain-db')
-          byebug
+          keychain_data = get_keychain_from_vault(
+            vault_addr: 'http://127.0.0.1:8200',
+            keychain_name: customer_assets
+          )
           keychain_password = keychain_data[:keychain_password]
           keychain_path = keychain_data[:keychain_path]
 
@@ -37,7 +38,6 @@ def customize_built_app(options)
           cert = certificate_id_from_keychain(keychain_path)
           sign_frameworks(cert, keychain_path)
           prepare_app_bundle(app_bundle_path, customer_profile_pathname)
-          byebug
           prepare_entitlements(cert, app_bundle_path, keychain_path, customer_profile_pathname)
         end
       end
