@@ -1,9 +1,19 @@
 require 'pry-byebug'
+require 'yaml'
 require_relative 'binary_plist'
+require_relative 'customize_build'
 
 def customize_built_app(options)
   # a handy default for quick iterations
   customer_assets = options[:customer_assets] || ENV['APPIAN_CUSTOMER_ASSETS'] || 'puppy'
+  customer_config_filepath = File.absolute_path("../#{customer_assets}/#{customer_assets}.yaml")
+  if File.exist?(customer_config_filepath)
+    customer_config_file = YAML.load_file(customer_config_filepath)
+    welcome_message = customer_config_file['WelcomeMessage'] || 'Hello World!'
+    background_color = customer_config_file['BackgroundHexColor'] || '#FFFFFFFF'
+  end
+  welcome_message = options[:welcome_message] unless options[:welcome_message].nil?
+  background_color = options[:background_color] unless options[:background_color].nil?
 
   customer_appiconset_dirpath = File.absolute_path("../#{customer_assets}/#{customer_assets}.appiconset")
   customer_profile_pathname = File.absolute_path("../#{customer_assets}/#{customer_assets}.mobileprovision")
@@ -23,7 +33,14 @@ def customize_built_app(options)
           sh("unzip -o -q #{example_ipa_filepath}")
           example_ipa_payload_dir = File.join(unzipped_ipa_path, "Payload")
           app_bundle_path = File.join(example_ipa_payload_dir, 'AppExample.app')
-
+          configurations_plist_filepath = File.join(app_bundle_path, 'configurations.plist')
+          sh("plutil -convert xml1 #{configurations_plist_filepath}")
+          customize_build(
+            welcome_message: welcome_message,
+            background_color: background_color,
+            config_filepath: configurations_plist_filepath
+          )
+          sh("plutil -convert binary1 #{configurations_plist_filepath}")
           copy_customer_images(customer_appiconset_dirpath, latest_release_pkg_path)
           compile_images(latest_release_pkg_path, example_ipa_payload_dir)
 
