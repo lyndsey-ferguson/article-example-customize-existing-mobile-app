@@ -1,6 +1,6 @@
 
 def build_custom_app(options)
-  customer_assets = 'lyndsey'
+  customer_assets = options[:customer_assets] || ENV['APPIAN_CUSTOMER_ASSETS'] || 'lyndsey'
   customize_build options
   keychain_data = get_keychain_from_vault(
     vault_addr: 'http://127.0.0.1:8200',

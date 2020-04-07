@@ -3,7 +3,7 @@ require_relative 'binary_plist'
 
 def customize_built_app(options)
   # a handy default for quick iterations
-  customer_assets = 'puppy'
+  customer_assets = options[:customer_assets] || ENV['APPIAN_CUSTOMER_ASSETS'] || 'puppy'
 
   customer_appiconset_dirpath = File.absolute_path("../#{customer_assets}/#{customer_assets}.appiconset")
   customer_profile_pathname = File.absolute_path("../#{customer_assets}/#{customer_assets}.mobileprovision")
