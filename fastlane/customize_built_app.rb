@@ -20,6 +20,8 @@ def customize_built_app(options)
 
   zip_package_path = download_latest_release
   # unzip the ipa/images package into a tmp directory
+
+  custom_built_app_path = File.expand_path(File.join('~/Desktop', "#{customer_assets}.ipa"))
   Dir.mktmpdir("latest_release_pkg") do |latest_release_pkg_path|
     Dir.chdir(latest_release_pkg_path) do
       sh("unzip -o -q #{zip_package_path}")
@@ -56,10 +58,12 @@ def customize_built_app(options)
           sign_frameworks(cert, keychain_path)
           prepare_app_bundle(app_bundle_path, customer_profile_pathname)
           prepare_entitlements(cert, app_bundle_path, keychain_path, customer_profile_pathname)
+          sh("zip -qr #{custom_built_app_path} .")
         end
       end
     end
   end
+  puts "Built mobile app: #{custom_built_app_path}"
 end
 
 APP_ICON_ASSET_DIR = 'AppIcon.appiconset'
