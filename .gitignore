@@ -1,2 +1,16 @@
 .github_token
+*.iml
+.gradle
+lyndsey/local.properties
+lyndsey/.idea/caches
+lyndsey/.idea/libraries
+lyndsey/.idea/modules.xml
+lyndsey/.idea/workspace.xml
+lyndsey/.idea/navEditor.xml
+lyndsey/.idea/assetWizardSettings.xml
+.DS_Store
+lyndsey/build
+lyndsey/captures
+.externalNativeBuild
+.cxx
 
