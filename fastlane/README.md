@@ -45,6 +45,11 @@ fastlane ios customize_built_app
 fastlane android customize_build
 ```
 
+### android build_custom_app
+```
+fastlane android build_custom_app
+```
+
 
 ----
 

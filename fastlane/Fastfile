@@ -26,4 +26,9 @@ platform :android do
     require_relative 'android_customize_build'
     customize_build(options)
   end
+
+  lane :build_custom_app do |options|
+    require_relative 'android_build_custom_app'
+    build_custom_app(options)
+  end
 end
