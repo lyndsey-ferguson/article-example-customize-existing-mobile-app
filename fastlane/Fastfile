@@ -1,23 +1,29 @@
 
 platform :ios do
   lane :customize_build do |options|
-    require_relative 'customize_build'
+    require_relative 'ios_customize_build'
     customize_build(options)
   end
 
   lane :build_custom_app do |options|
-    require_relative 'build_custom_app'
+    require_relative 'ios_build_custom_app'
     build_custom_app(options)
   end
 
   lane :download_latest_release do |options|
-    require_relative 'download_latest_release'
+    require_relative 'ios_download_latest_release'
     download_latest_release(options)
   end
 
   lane :customize_built_app do |options|
-    require_relative 'customize_built_app'
+    require_relative 'ios_customize_built_app'
     customize_built_app(options)
   end
 end
 
+platform :android do
+  lane :customize_build do |options|
+    require_relative 'android_customize_build'
+    customize_build(options)
+  end
+end
