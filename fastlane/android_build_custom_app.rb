@@ -11,6 +11,14 @@ def build_custom_app(options)
   )
   keystore_path = keystore_data[:keystore_path]
   keystore_password = keystore_data[:keystore_password]
-  sh("zipalign -v -p 4 #{unsigned_unaligned_apk_path} #{unsigned_aligned_apk_path}")
-  sh("apksigner sign --ks #{keystore_path} --ks-pass pass:'#{keystore_password}' --out #{signed_apk_path} #{unsigned_aligned_apk_path}")
+  gradle(
+    project_dir: "AndroidExample",
+    task: "assemble",
+    build_type: "Release",
+    print_command: true,
+    properties: {
+      "android.injected.signing.store.file" => keystore_path,
+      "android.injected.signing.store.password" => keystore_password
+    }
+  )
 end
