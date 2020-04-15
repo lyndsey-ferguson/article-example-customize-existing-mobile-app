@@ -36,4 +36,9 @@ platform :android do
     require_relative 'x_download_latest_release'
     download_latest_release(options)
   end
+
+  lane :customize_built_app do |options|
+    require_relative 'android_customize_built_app'
+    customize_built_app(options)
+  end
 end

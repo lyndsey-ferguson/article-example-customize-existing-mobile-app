@@ -55,6 +55,11 @@ fastlane android build_custom_app
 fastlane android download_latest_release
 ```
 
+### android customize_built_app
+```
+fastlane android customize_built_app
+```
+
 
 ----
 

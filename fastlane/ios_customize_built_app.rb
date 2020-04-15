@@ -1,6 +1,6 @@
 require 'yaml'
 require_relative 'binary_plist'
-require_relative 'customize_build'
+require_relative 'ios_customize_build'
 
 def customize_built_app(options)
   # a handy default for quick iterations
