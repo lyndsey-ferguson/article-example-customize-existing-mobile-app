@@ -32,16 +32,7 @@ def customize_built_app(options)
         apk: example_apk_path,
         build: false
       )
-      strings_filepaths = Dir.glob('*/**/values*/strings.xml')
-      strings_filepaths.each do |strings_filepath|
-        strings_file = REXML::Document.new(File.read(strings_filepath))
-        app_name_element = REXML::XPath.first(strings_file, "//string[@name='app_name']")
-        unless app_name_element.nil?
-          app_name_element.text = customer_assets
-          File.open(strings_filepath, 'w') { |file| strings_file.write file }
-        end
-      end
-
+      update_app_name(customer_assets)
       FastlaneCore::Helper.show_loading_indicator('Building customized app')
       apktool(
 	apk: unsigned_unaligned_temp_apk_path,
@@ -70,6 +61,18 @@ def customize_built_app(options)
   )
   FastlaneCore::Helper.hide_loading_indicator
   puts "Built mobile app: #{custom_built_app_path}"
+end
+
+def update_app_name(new_app_name)
+  strings_filepaths = Dir.glob('*/**/values*/strings.xml')
+  strings_filepaths.each do |strings_filepath|
+    strings_file = REXML::Document.new(File.read(strings_filepath))
+    app_name_element = REXML::XPath.first(strings_file, "//string[@name='app_name']")
+    unless app_name_element.nil?
+      app_name_element.text = new_app_name
+      File.open(strings_filepath, 'w') { |file| strings_file.write file }
+    end
+  end
 end
 
 def apktool(params)
