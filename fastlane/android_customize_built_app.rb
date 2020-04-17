@@ -9,7 +9,8 @@ def customize_built_app(options)
 
   # a handy default for quick iterations
   customer_assets = options[:customer_assets] || ENV['APPIAN_CUSTOMER_ASSETS'] || 'puppy'
-  customer_config_filepath = File.absolute_path("../#{customer_assets}/#{customer_assets}.yaml")
+  customer_assets_dir = File.absolute_path("../#{customer_assets}")
+  customer_config_filepath = File.join(customer_assets_dir, "#{customer_assets}.yaml")
   if File.exist?(customer_config_filepath)
     customer_config_file = YAML.load_file(customer_config_filepath)
     welcome_message = customer_config_file['WelcomeMessage'] || 'Hello World!'
@@ -28,12 +29,13 @@ def customize_built_app(options)
 
   Dir.mktmpdir("customize_built_app") do |unzipped_apk_path|
     Dir.chdir(unzipped_apk_path) do
+      FastlaneCore::Helper.show_loading_indicator('Building customized app')
       apktool(
         apk: example_apk_path,
         build: false
       )
       update_app_name(customer_assets)
-      FastlaneCore::Helper.show_loading_indicator('Building customized app')
+      replace_launcher_images(customer_assets_dir)
       apktool(
 	apk: unsigned_unaligned_temp_apk_path,
         build: true
@@ -61,6 +63,17 @@ def customize_built_app(options)
   )
   FastlaneCore::Helper.hide_loading_indicator
   puts "Built mobile app: #{custom_built_app_path}"
+end
+
+def replace_launcher_images(customer_assets_dir)
+  launcher_image_paths = Dir.glob("#{customer_assets_dir}/res/mipmap-*dpi/ic_launcher*.png")
+  launcher_image_paths.each do |launcher_image_path|
+    mipmap_directory = File.basename(File.dirname(launcher_image_path))
+    app_mipmap_directory = File.join(".", "res", mipmap_directory)
+    app_mipmap_image_path = File.join(app_mipmap_directory, File.basename(launcher_image_path))
+    FileUtils.rm_f(app_mipmap_image_path)
+    FileUtils.cp(launcher_image_path, app_mipmap_image_path)
+  end
 end
 
 def update_app_name(new_app_name)
