@@ -34,7 +34,13 @@ def customize_built_app(options)
         apk: example_apk_path,
         build: false
       )
-      update_app_name(customer_assets)
+      update_app_configuration(
+        {
+          app_name: customer_assets,
+          welcome_message: welcome_message,
+          background_color: background_color
+        }
+      )
       replace_launcher_images(customer_assets_dir)
       apktool(
 	apk: unsigned_unaligned_temp_apk_path,
@@ -76,15 +82,10 @@ def replace_launcher_images(customer_assets_dir)
   end
 end
 
-def update_app_name(new_app_name)
+def update_app_configuration(options)
   strings_filepaths = Dir.glob('*/**/values*/strings.xml')
   strings_filepaths.each do |strings_filepath|
-    strings_file = REXML::Document.new(File.read(strings_filepath))
-    app_name_element = REXML::XPath.first(strings_file, "//string[@name='app_name']")
-    unless app_name_element.nil?
-      app_name_element.text = new_app_name
-      File.open(strings_filepath, 'w') { |file| strings_file.write file }
-    end
+    customize_build(options.merge(config_filepath: strings_filepath))
   end
 end
 
