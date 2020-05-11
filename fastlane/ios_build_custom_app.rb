@@ -1,4 +1,4 @@
-
+# customize and build the iOS application
 def build_custom_app(options)
   customer_assets = options[:customer_assets] || ENV['APPIAN_CUSTOMER_ASSETS'] || 'lyndsey'
   customize_build options
@@ -6,11 +6,22 @@ def build_custom_app(options)
     vault_addr: 'http://127.0.0.1:8200',
     keychain_name: customer_assets
   )
+
+  # get the keychain from Vault so that the app can
+  # be signed as the customer.
+  #
+  # remember, we introduced get_keychain_from_vault in the article
+  # Automate Securing Code Signing Assets
+  # http://medium.to.be.added.later.com
+  #
   unlock_keychain(
     path: keychain_data[:keychain_path],
     password: keychain_data[:keychain_password],
     set_default: true
   )
+
+  # turn off automatic code signing and set up the provisioning
+  # and team id for the application to match that of the customer's
   disable_automatic_code_signing(path: './iOSExample/iOSExample.xcodeproj')
   code_signing_identity = code_signing_identity_from_keychain(keychain_data[:keychain_path])
   update_project_provisioning(
@@ -23,6 +34,9 @@ def build_custom_app(options)
     path: './iOSExample/iOSExample.xcodeproj',
     teamid: '57738V598V'
   )
+
+  # now build the application with the customer's customizations
+  # provisioning profiles, and code signing identity
   build_app(
       scheme: 'iOSExample',
       project: './iOSExample/iOSExample.xcodeproj',

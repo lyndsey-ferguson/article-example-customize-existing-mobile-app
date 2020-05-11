@@ -1,4 +1,4 @@
-
+# method to configure the iOS application’s welcome message and background color
 def customize_build(options)
   welcome_message = options[:welcome_message] || 'Hello World!'
   background_color = options[:background_color] || '#FFFFFFFF'
