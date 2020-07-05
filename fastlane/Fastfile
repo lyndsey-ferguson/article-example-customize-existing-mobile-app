@@ -18,7 +18,7 @@ platform :ios do
     download_latest_release(options)
   end
 
-  desc 'download, customize, and sign the app according to customer's needs'
+  desc 'download, customize, and sign the app according to customer\'s needs'
   lane :customize_built_app do |options|
     require_relative 'ios_customize_built_app'
     customize_built_app(options)
