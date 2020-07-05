@@ -39,7 +39,7 @@ def customize_built_app(options)
           background_color = options[:background_color] unless options[:background_color].nil?
 
           example_ipa_payload_dir = File.join(unzipped_ipa_path, "Payload")
-          app_bundle_path = File.join(example_ipa_payload_dir, 'iOSExample.app')
+          app_bundle_path = File.join(example_ipa_payload_dir, 'AppExample.app')
           configurations_plist_filepath = File.join(app_bundle_path, 'configurations.plist')
 
           # Apple stores the xml plist files in a binary format in order to
@@ -101,7 +101,7 @@ end
 # as one of its command line options. Rather than hard-coding
 # it, we get that value from the application Info.plist.
 def minimum_deployment_target
-  plist_filepath = 'Payload/iOSExample.app/Info.plist'
+  plist_filepath = 'Payload/AppExample.app/Info.plist'
   temporary_plist_file = Tempfile.new
   FileUtils.cp(plist_filepath, temporary_plist_file.path)
   info_plist = Plist.parse_binary_xml(temporary_plist_file.path)
@@ -111,7 +111,7 @@ end
 def compile_images(latest_release_pkg_path, example_ipa_payload_dir)
   FileUtils.mkdir_p("#{latest_release_pkg_path}/build")
   command = "xcrun actool #{latest_release_pkg_path} "
-  command += "--compile #{example_ipa_payload_dir}/iOSExample.app "
+  command += "--compile #{example_ipa_payload_dir}/AppExample.app "
   command += "--minimum-deployment-target #{minimum_deployment_target} "
   command += '--app-icon AppIcon --platform iphoneos '
   command += "--output-partial-info-plist #{latest_release_pkg_path}/build/partial.plist "
@@ -128,7 +128,7 @@ end
 
 # sign any frameworks inside of the application
 def sign_frameworks(cert, keychain_filepath)
-  frameworks = Dir.glob('Payload/iOSExample.app/Frameworks/*.dylib').map { |s| "'#{s}'" }.join(' ')
+  frameworks = Dir.glob('Payload/AppExample.app/Frameworks/*.dylib').map { |s| "'#{s}'" }.join(' ')
   unless frameworks.empty?
     sh("/usr/bin/codesign -f --keychain \"#{keychain_filepath.shellescape}\"  -s \"#{cert}\" #{frameworks}")
   end
