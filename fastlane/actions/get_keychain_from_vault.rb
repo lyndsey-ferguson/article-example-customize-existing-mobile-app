@@ -7,7 +7,14 @@ module Fastlane
     class GetKeychainFromVaultAction < Action
       def self.run(params)
         Vault.address = params[:vault_addr]
-        Vault.token = params[:vault_token]
+        if params[:vault_approle_role_id] && params[:vault_approle_secret_id]
+          Vault.auth.approle(
+            params[:vault_approle_role_id], 
+            param[:vault_approle_secret_id])
+          )
+        else
+          Vault.token = params[:vault_token]
+        end
 
         private_key, private_key_passphrase = private_key_data
         decrypter = OpenSSL::PKey::RSA.new(private_key, private_key_passphrase)
@@ -78,6 +85,18 @@ module Fastlane
             key: :vault_addr,
             env_name: "VAULT_ADDR",
             description: "The address of the Vault server expressed as a URL and port, for example: https://127.0.0.1:8200/",
+          ),
+          FastlaneCore::ConfigItem.new(
+            key: :vault_approle_role_id,
+            env_name: "VAULT_APPROLE_ROLE_ID",
+            description: "Vault AppRole role id",
+            is_string: true
+          ),
+          FastlaneCore::ConfigItem.new(
+            key: :vault_approle_secret_id,
+            env_name: "VAULT_APPROLE_SECRET_ID",
+            description: "Vault AppRole secret id",
+            is_string: true
           ),
           FastlaneCore::ConfigItem.new(
             key: :vault_token,
