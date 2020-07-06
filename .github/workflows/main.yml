@@ -27,3 +27,7 @@ jobs:
       
     - name: customize an already built ios app
       run: bundle exec fastlane ios customize_built_app
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VAULT_CODESIGNING_ROLE_ID: ${{ secrets.VAULT_CODESIGNING_ROLE_ID }}
+        VAULT_CODESIGNING_SECRET_ID: ${{ secrets.VAULT_CODESIGNING_SECRET_ID }}
