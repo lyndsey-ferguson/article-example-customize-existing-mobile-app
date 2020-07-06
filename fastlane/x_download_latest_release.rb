@@ -7,7 +7,7 @@ def download_latest_release(options)
   result = github_api(
     http_method: 'GET',
     path: '/repos/lyndsey-ferguson/CustomizeExistingAppExample/releases/latest',
-    api_token: File.read(File.absolute_path('../.github_token'))
+    api_token: ENV['GITHUB_TOKEN'] || File.read(File.absolute_path('../.github_token'))
   )
   body = JSON.parse(result[:body])
 

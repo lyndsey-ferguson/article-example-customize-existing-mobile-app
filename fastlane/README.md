@@ -20,22 +20,22 @@ or alternatively using `brew cask install fastlane`
 ```
 fastlane ios customize_build
 ```
-
+configures the background color of the application, along with the welcome message
 ### ios build_custom_app
 ```
 fastlane ios build_custom_app
 ```
-
+customize and build the iOS application
 ### ios download_latest_release
 ```
 fastlane ios download_latest_release
 ```
-
+download the latest released app for iOS
 ### ios customize_built_app
 ```
 fastlane ios customize_built_app
 ```
-
+download, customize, and sign the app according to customer's needs
 
 ----
 
