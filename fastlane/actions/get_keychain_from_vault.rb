@@ -9,7 +9,7 @@ module Fastlane
         Vault.address = params[:vault_addr]
         if params[:vault_approle_role_id] && params[:vault_approle_secret_id]
           Vault.auth.approle(
-            params[:vault_approle_role_id],
+            params[:vault_approle_role_id], 
             params[:vault_approle_secret_id]
           )
         else
