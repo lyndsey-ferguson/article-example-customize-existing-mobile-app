@@ -8,6 +8,8 @@ module Fastlane
       def self.run(params)
         Vault.address = params[:vault_addr]
         if params[:vault_approle_role_id] && params[:vault_approle_secret_id]
+          puts params[:vault_approle_role_id][-6..-1]
+          puts params[:vault_approle_secret_id][-6..-1]
           Vault.auth.approle(
             params[:vault_approle_role_id], 
             params[:vault_approle_secret_id]
