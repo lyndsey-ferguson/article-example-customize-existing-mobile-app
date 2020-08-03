@@ -9,6 +9,12 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
+    inputs:
+      company_name:
+        description: "Name of company"
+        required: false
+        default: 'puppy'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
