@@ -12,7 +12,7 @@ def build_custom_app(options)
   #
   # remember, we introduced get_keychain_from_vault in the article
   # Automate Securing Code Signing Assets
-  # http://medium.to.be.added.later.com
+  # https://bit.ly/2SPPYTT
   #
   unlock_keychain(
     path: keychain_data[:keychain_path],
